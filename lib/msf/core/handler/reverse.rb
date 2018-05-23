@@ -45,9 +45,9 @@ module Msf
       def bind_addresses
         # Switch to IPv6 ANY address if the LHOST is also IPv6
         addr = Rex::Socket.resolv_nbo(datastore['LHOST'])
-
+        @@addr_auto = ''
         # Use Socket.ip_address_list to get LHOST
-        if datastore['AutoLHOST'] && datastore['LHOST'].nil?
+        if datastore['AutoLHOST']
           @@addr_auto = Socket.ip_address_list[1].ip_address
         end
 
@@ -90,10 +90,6 @@ module Msf
       # if it fails to start the listener.
       #
       def setup_handler
-        if datastore['LHOST'].nil? && datastore['AutoLHOST'] == false
-          print_warning("Either of AutoLHOST or LHOST needs to be set")
-          raise Msf::OptionValidateError.new(['LHOST', 'AutoLHOST'])
-        end
         if !datastore['Proxies'].blank? && !datastore['ReverseAllowProxy']
           raise RuntimeError, "TCP connect-back payloads cannot be used with Proxies. Use 'set ReverseAllowProxy true' to override this behaviour."
         end
@@ -121,6 +117,9 @@ module Msf
           else
             ex = false
             via = via_string_for_ip(ip, comm)
+            if ip == @@addr_auto && datastore['AutoLHOST']
+              print_status("LHOST automatically set to #{ip}")
+            end
             print_status("Started #{human_name} handler on #{ip}:#{local_port} #{via}")
             break
           end
