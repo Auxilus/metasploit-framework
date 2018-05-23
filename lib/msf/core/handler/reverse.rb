@@ -62,6 +62,7 @@ module Msf
         end
 
         if datastore['AutoLHOST']
+          # Prioritize @@addr_auto if AutoLHOST is true
           addrs = [ @@addr_auto, addr, any ]
         else
           addrs = [ addr, any ]
