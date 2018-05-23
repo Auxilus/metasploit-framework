@@ -45,7 +45,7 @@ module Msf
       def bind_addresses
         # Switch to IPv6 ANY address if the LHOST is also IPv6
         addr = Rex::Socket.resolv_nbo(datastore['LHOST'])
-        @@addr_auto = ''
+
         # Use Socket.ip_address_list to get LHOST
         if datastore['AutoLHOST']
           @@addr_auto = Socket.ip_address_list[1].ip_address
@@ -118,6 +118,7 @@ module Msf
             ex = false
             via = via_string_for_ip(ip, comm)
             if ip == @@addr_auto && datastore['AutoLHOST']
+              print_error("Privided LHOST failed to bind")
               print_status("LHOST automatically set to #{ip}")
             end
             print_status("Started #{human_name} handler on #{ip}:#{local_port} #{via}")
