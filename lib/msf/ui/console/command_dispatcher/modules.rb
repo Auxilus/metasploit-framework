@@ -387,6 +387,10 @@ module Msf
               end
             end
 
+            if args.empty? and @module_search_results.empty?
+              cmd_search_help
+              return false
+            end
             cached = true if args.empty?
 
             # Display the table of matches
